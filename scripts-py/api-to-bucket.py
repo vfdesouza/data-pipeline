@@ -11,6 +11,6 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name):
 
     return list(storage_client.list_buckets())
 
-test = upload_to_bucket(blob_name='upload-test3',path_to_file='./files/upload-test.txt',bucket_name='bucket-quickstart_my-project-datapipeline-375319')
+test = upload_to_bucket(blob_name='test/upload-test3',path_to_file='./files/upload-test.txt',bucket_name='bucket-quickstart_my-project-datapipeline-375319')
 
 print(test)
