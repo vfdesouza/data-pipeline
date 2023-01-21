@@ -1,16 +1,16 @@
-from google.cloud import storage
+from module import Module
 
-def upload_to_bucket(blob_name, path_to_file, bucket_name):
+obj = Module()
 
-    storage_client = storage.Client.from_service_account_json(
-        './creds/creds.json')  
+bucket_name = ''
+bucket = obj.initialize_bucket(bucket_name=bucket_name)
 
-    bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-    blob.upload_from_filename(path_to_file)
+file_to_upload = ''
+path_to_file = ''
 
-    return list(storage_client.list_buckets())
+obj.upload_to_bucket(
+  blob_name=file_to_upload,\
+  path_to_file=path_to_file,\
+  bucket=bucket)
 
-test = upload_to_bucket(blob_name='test/upload-test3',path_to_file='./files/upload-test.txt',bucket_name='bucket-quickstart_my-project-datapipeline-375319')
-
-print(test)
+print('Process concluded!')
