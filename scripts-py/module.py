@@ -1,5 +1,7 @@
 from google.cloud import storage
 from pathlib import Path
+from time import sleep
+import requests as r
 
 
 class Module:
@@ -47,3 +49,23 @@ class Module:
         blob.download_to_filename(f'{path_folder}/{blob.name}')
 
         return print('Upload sucess')
+
+
+    def download_to_file(url, path, filename):
+        count_exceptions = 0
+        while True:
+            try:
+                response = r.get(url)
+                if response.status_code != 200:
+                    print('error')
+                response.raise_for_status()
+                break
+            except:
+                if count_exceptions > 50:
+                    raise Exception("Failed +50 tentatives")
+                count_exceptions += 1
+                sleep(1)
+
+        with open(path + filename, 'wb') as file:
+            file.write(response.content)
+            file.close()
