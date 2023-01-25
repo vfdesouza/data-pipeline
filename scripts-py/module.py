@@ -2,6 +2,7 @@ from google.cloud import storage
 from pathlib import Path
 from time import sleep
 import requests as r
+import os
 
 
 class Module:
@@ -29,43 +30,56 @@ class Module:
         path_to_file: caminho do arquivo a ser salvo no bucket 
         """
 
+        # instanciando um blob
         blob = bucket.blob(blob_name)
 
+        # função responsável por enviar o arquivo para o gcp
         blob.upload_from_filename(path_to_file)
 
-        return print('Upload sucess')
+        return print(f'Download of file {blob_name} completed successfully.')
 
-    def download_to_bucket(self, bucket=str, blob_name=str, path_folder=str) -> None:
+    def downloat_to_bucket(self, path_to_folder=str, bucket_name=str) -> None:
         """
-        bucket: nome do bucket que o arquivo deverá ser salvo
-        blob_name: nome do arquivo que será baixado do bucket 
-        path_folder: nome da pasta que deverá ser criada para que o arquivo seja salvo
+        path_to_folder: nome da pasta em que os arquivos serão salvos
+        bucket_name: nome do bucket que os arquivos estão para ser baixados
         """
 
-        blob = bucket.blob(blob_name)
+        # verifica se a indicada no parâmetro existe, se não, cria a pasta
+        if os.path.exists(path_to_folder) == False:
+            Path(path_to_folder).mkdir(parents=True, exist_ok=True)
 
-        Path(path_folder).mkdir(parents=True, exist_ok=True)
+        storage_client = self.created_client()
 
-        blob.download_to_filename(f'{path_folder}/{blob.name}')
+        prefix = ['yellow/', 'green/', 'fhv/', 'fhvhv/']
 
-        return print('Upload sucess')
+        destination_folder = path_to_folder
 
+        for directory in prefix:
+            blobs_in_bucket = storage_client.list_blobs(
+                bucket_name, prefix=directory)
+            for blob in blobs_in_bucket:
+                file = blob.name.split("/")[-1]
 
-    def download_to_file(url, path, filename):
-        count_exceptions = 0
+            blob.download_to_filename(f'{destination_folder}/{file}')
+
+    # função responsável pelas requisições a API que os arquivos serão baixados
+    def retry_request(self, url=str) -> dict:
+        count_attempt = 0
+
         while True:
             try:
                 response = r.get(url)
                 if response.status_code != 200:
-                    print('error')
+                    print(
+                        f'Status code not equal to 200: {response.status_code}.')
                 response.raise_for_status()
                 break
             except:
-                if count_exceptions > 50:
-                    raise Exception("Failed +50 tentatives")
-                count_exceptions += 1
-                sleep(1)
+                if count_attempt > 50:
+                    raise Exception('Failed to extract data in 50 retries.')
 
-        with open(path + filename, 'wb') as file:
-            file.write(response.content)
-            file.close()
+                print(f'Retry number: {count_attempt}. Waiting...')
+                count_attempt += 1
+                sleep(4)
+
+        return response
