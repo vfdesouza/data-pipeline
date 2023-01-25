@@ -3,3 +3,4 @@ general-notes.txt
 jupyter-test.ipynb
 __pycache__
 .env
+*.parquet

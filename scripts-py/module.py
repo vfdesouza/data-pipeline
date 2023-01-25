@@ -1,4 +1,5 @@
 from google.cloud import storage
+from google.cloud import bigquery
 from pathlib import Path
 from time import sleep
 import requests as r
@@ -13,6 +14,9 @@ class Module:
     def created_client(self):
         # inicializacao do client gcp com as credenciais IAM identificadas
         return storage.Client.from_service_account_json(self.credentials)
+
+    def created_client_bigquery(self):
+        return bigquery.Client.from_service_account_json(self.credentials)
 
     def initialize_bucket(self, bucket_name=str):
         # inicializacao do storage_client
@@ -59,8 +63,8 @@ class Module:
                 bucket_name, prefix=directory)
             for blob in blobs_in_bucket:
                 file = blob.name.split("/")[-1]
-
-            blob.download_to_filename(f'{destination_folder}/{file}')
+                if file != '':
+                    blob.download_to_filename(f'{destination_folder}/{file}')
 
     # função responsável pelas requisições a API que os arquivos serão baixados
     def retry_request(self, url=str) -> dict:
