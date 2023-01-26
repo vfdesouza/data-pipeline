@@ -1,4 +1,5 @@
 from google.cloud import storage
+from google.oauth2.service_account import Credentials
 from google.cloud import bigquery
 from pathlib import Path
 from time import sleep
@@ -10,6 +11,9 @@ class Module:
 
     def __init__(self, credentials='./creds/creds.json'):
         self.credentials = credentials
+
+    def get_credentials(self, credentials='./creds/creds.json'):
+        return Credentials.from_service_account_file(credentials)
 
     def created_client(self):
         # inicializacao do client gcp com as credenciais IAM identificadas
