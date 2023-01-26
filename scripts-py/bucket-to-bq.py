@@ -8,32 +8,37 @@ from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 load_dotenv()
 
-BUCKET_NAME = os.getenv('BUCKET_NAME')
-
 obj = Module()
 
-# path_to_folder = 'temparq'
-# obj.downloat_to_bucket(path_to_folder, BUCKET_NAME)
+BUCKET_NAME = os.getenv('BUCKET_NAME')
+DATA_SET_RAW = os.getenv('DATA_SET_RAW')
+PROJECT_NAME = os.getenv('PROJECT_NAME')
+CREDENTIALS = obj.get_credentials()
 
-# spark = SparkSession \
-#     .builder \
-#     .appName('data-pipeline') \
-#     .config('spark.some.config.option', 'some-value') \
-#     .getOrCreate()
+list_files_parquet = os.listdir('./temparq/')
+print(f'Identified files for upload: {list_files_parquet}\n')
 
-# df = spark.read.parquet('./temparq/yellow_tripdata_2022_07.parquet')
+for file_parquet in list_files_parquet: 
+    
+    file_to_path = f'./temparq/{file_parquet}'
+    
+    df = pd.read_parquet(file_to_path).astype(str)
+    table_name = file_parquet.split('.')[0]
+    
+    print(f'Starting upload of dataframe {table_name}')
+    
+    table_schema = [{'name': column, 'type': 'STRING'} for column in df.columns]
 
-df = pd.read_parquet('./temparq/yellow_tripdata_2022_07.parquet').astype(str)
-
-credentials = obj.get_credentials()
-table_schema = [{'name': column, 'type': 'STRING'} for column in df.columns]
-
-df.to_gbq(
-    destination_table='dataset_test.table_test',
-    project_id='my-project-datapipeline-375319',
-    if_exists='replace',
-    progress_bar=True,
-    table_schema=table_schema,
-    credentials=credentials)
+    df.to_gbq(
+        destination_table=f'{DATA_SET_RAW}.{table_name}',
+        project_id=PROJECT_NAME,
+        if_exists='replace',
+        progress_bar=True,
+        table_schema=table_schema,
+        credentials=CREDENTIALS)
+    
+    os.remove(file_to_path)
+    
+    print(f'Upload completed of dataframe {file_parquet}.\nFile removed from directory!')
 
 print('Process concluded!')
