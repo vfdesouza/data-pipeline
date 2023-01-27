@@ -22,7 +22,7 @@ for c in color:
 
         response = obj.retry_request(url)
 
-        with open('./temparq/' + filename, 'wb') as file:
+        with open('./files-temp/' + filename, 'wb') as file:
             file.write(response.content)
             file.close()
 
@@ -30,10 +30,10 @@ for c in color:
 
         obj.upload_to_bucket(
             blob_name=f'{c}/{filename}',
-            path_to_file=f'./temparq/{filename}',
+            path_to_file=f'./files-temp/{filename}',
             bucket=bucket)
 
-        path = os.path.join('./temparq/', filename)
+        path = os.path.join('./files-temp/', filename)
         os.remove(path)
 
 print('Process concluded!')
