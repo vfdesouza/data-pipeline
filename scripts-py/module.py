@@ -6,7 +6,6 @@ from time import sleep
 import requests as r
 import os
 
-
 class Module:
 
     def __init__(self, credentials='./creds/creds.json'):
