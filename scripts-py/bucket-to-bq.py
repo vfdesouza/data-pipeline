@@ -46,3 +46,4 @@ for file_parquet in list_files_parquet:
     print(f'Upload completed of dataframe {file_parquet}.\nFile removed from directory!\n')
 
 print('Process concluded!')
+# commit test
