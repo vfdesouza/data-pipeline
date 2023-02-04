@@ -37,3 +37,4 @@ for c in color:
         os.remove(path)
 
 print('Process concluded!')
+#commit teste
