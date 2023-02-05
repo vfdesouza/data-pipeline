@@ -13,14 +13,14 @@ bucket = obj.initialize_bucket(bucket_name=BUCKET_NAME)
 color = ['yellow', 'green', 'fhv', 'fhvhv']
 month = ['07', '08', '09', '10', '11', '12']
 
-base_url = 'https://d37ci6vzurychx.cloudfront.net/trip-data/%s_tripdata_2022-%s.parquet'
+BASE_URL = 'https://d37ci6vzurychx.cloudfront.net/trip-data/%s_tripdata_2022-%s.parquet'
 
 for c in color:
     for m in month:
-        url = str(base_url % (c, m))
+        URL = str(BASE_URL  % (c, m))
         filename = f'{c}_tripdata_2022_{m}.parquet'
 
-        response = obj.retry_request(url)
+        response = obj.retry_request(URL)
 
         with open('./files-temp/' + filename, 'wb') as file:
             file.write(response.content)
@@ -35,6 +35,3 @@ for c in color:
 
         path = os.path.join('./files-temp/', filename)
         os.remove(path)
-
-print('Process concluded!')
-#commit teste

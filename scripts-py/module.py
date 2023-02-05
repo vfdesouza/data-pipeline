@@ -52,7 +52,7 @@ class Module:
         """
 
         # verifica se a indicada no parâmetro existe, se não, cria a pasta
-        if os.path.exists(path_to_folder) == False:
+        if os.path.exists(path_to_folder) is False:
             Path(path_to_folder).mkdir(parents=True, exist_ok=True)
 
         storage_client = self.created_client()
@@ -75,7 +75,7 @@ class Module:
 
         while True:
             try:
-                response = r.get(url)
+                response = r.get(url, timeout=15)
                 if response.status_code != 200:
                     print(
                         f'Status code not equal to 200: {response.status_code}.')
