@@ -6,12 +6,12 @@ from time import sleep
 import requests as r
 import os
 
-class Module:
 
-    def __init__(self, credentials='./creds/creds.json'):
+class Module:
+    def __init__(self, credentials="./creds/creds.json"):
         self.credentials = credentials
 
-    def get_credentials(self, credentials='./creds/creds.json'):
+    def get_credentials(self, credentials="./creds/creds.json"):
         return Credentials.from_service_account_file(credentials)
 
     def created_client(self):
@@ -34,7 +34,7 @@ class Module:
         """
         bucket: nome do bucket que o arquivo deverá ser salvo
         blob_name: nome para o arquivo que será salvo
-        path_to_file: caminho do arquivo a ser salvo no bucket 
+        path_to_file: caminho do arquivo a ser salvo no bucket
         """
 
         # instanciando um blob
@@ -43,7 +43,7 @@ class Module:
         # função responsável por enviar o arquivo para o gcp
         blob.upload_from_filename(path_to_file)
 
-        return print(f'Download of file {blob_name} completed successfully.')
+        return print(f"Download of file {blob_name} completed successfully.")
 
     def downloat_to_bucket(self, path_to_folder=str, bucket_name=str) -> None:
         """
@@ -57,17 +57,16 @@ class Module:
 
         storage_client = self.created_client()
 
-        prefix = ['yellow/', 'green/', 'fhv/', 'fhvhv/']
+        prefix = ["yellow/", "green/", "fhv/", "fhvhv/"]
 
         destination_folder = path_to_folder
 
         for directory in prefix:
-            blobs_in_bucket = storage_client.list_blobs(
-                bucket_name, prefix=directory)
+            blobs_in_bucket = storage_client.list_blobs(bucket_name, prefix=directory)
             for blob in blobs_in_bucket:
                 file = blob.name.split("/")[-1]
-                if file != '':
-                    blob.download_to_filename(f'{destination_folder}/{file}')
+                if file != "":
+                    blob.download_to_filename(f"{destination_folder}/{file}")
 
     # função responsável pelas requisições a API que os arquivos serão baixados
     def retry_request(self, url=str) -> dict:
@@ -77,15 +76,14 @@ class Module:
             try:
                 response = r.get(url, timeout=15)
                 if response.status_code != 200:
-                    print(
-                        f'Status code not equal to 200: {response.status_code}.')
+                    print(f"Status code not equal to 200: {response.status_code}.")
                 response.raise_for_status()
                 break
             except:
                 if count_attempt > 50:
-                    raise Exception('Failed to extract data in 50 retries.')
+                    raise Exception("Failed to extract data in 50 retries.")
 
-                print(f'Retry number: {count_attempt}. Waiting...')
+                print(f"Retry number: {count_attempt}. Waiting...")
                 count_attempt += 1
                 sleep(4)
 
